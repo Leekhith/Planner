@@ -4,6 +4,17 @@
   <meta charset="UTF-8">
   <title>My Goal Planner</title>
 </head>
+  <h1>My Goal Planner</h1>
+<input type="text" id="mainGoal" placeholder="Enter your main goal">
+<button onclick="saveGoal()">Save Goal</button>
+
+<script>
+function saveGoal() {
+  const goal = document.getElementById('mainGoal').value;
+  localStorage.setItem('mainGoal', goal);
+  alert("Your goal is saved!");
+}
+</script>
 <body>
   <h1>Welcome to My Goal Planner</h1>
   <p>This is my first website built from my phone!</p>
