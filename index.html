@@ -14,33 +14,48 @@
   const input = document.getElementById('goal-input');
   const list = document.getElementById('goals-list');
 
-  // Load existing goals from LocalStorage when page loads
-  const savedGoals = JSON.parse(localStorage.getItem('goals') || '[]');
-  savedGoals.forEach(goalText => {
-    const li = document.createElement('li');
-    li.textContent = goalText;
-    list.appendChild(li);
-  });
+  // Load existing goals from LocalStorage
+  let savedGoals = JSON.parse(localStorage.getItem('goals') || '[]');
 
-  form.addEventListener('submit', function(e) {
+  function renderGoals() {
+    list.innerHTML = ''; // clear old list
+    savedGoals.forEach((goalText, index) => {
+      const li = document.createElement('li');
+      li.textContent = goalText + ' ';
+
+      // create delete button
+      const btn = document.createElement('button');
+      btn.textContent = '❌';
+      btn.style.marginLeft = '8px';
+
+      // delete goal on click
+      btn.addEventListener('click', () => {
+        savedGoals.splice(index, 1);               // remove from array
+        localStorage.setItem('goals', JSON.stringify(savedGoals)); // update storage
+        renderGoals();                              // redraw list
+      });
+
+      li.appendChild(btn);
+      list.appendChild(li);
+    });
+  }
+
+  // draw initial list
+  renderGoals();
+
+  // add new goal
+  form.addEventListener('submit', e => {
     e.preventDefault();
     const text = input.value.trim();
     if (!text) return;
-
-    // Add to UI
-    const li = document.createElement('li');
-    li.textContent = text;
-    list.appendChild(li);
-
-    // Save to storage
     savedGoals.push(text);
     localStorage.setItem('goals', JSON.stringify(savedGoals));
-
     input.value = '';
     input.focus();
+    renderGoals();
   });
 </script>
-
+  
   <body>
   <h1>Welcome to My Goal Planner</h1>
 </body>
