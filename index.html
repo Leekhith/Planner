@@ -1,62 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="style.css">
-  <title>My Goal Planner</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Private Goal Planner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      font-size: 16px;
+    }
+    button {
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    li span {
+      flex: 1;
+    }
+    li button {
+      background: #e74c3c;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+    }
+    li button:hover {
+      background: #c0392b;
+    }
+  </style>
 </head>
+<body>
   <h1>My Goal Planner</h1>
-<input type="text" id="mainGoal" placeholder="Enter your main goal">
-<button onclick="saveGoal()">Save Goal</button>
 
-<script>
-  const form = document.getElementById('add-goal-form');
-  const input = document.getElementById('goal-input');
-  const list = document.getElementById('goals-list');
+  <form id="add-goal-form">
+    <input id="goal-input" type="text" placeholder="Enter a goal" required />
+    <button type="submit">Add Goal</button>
+  </form>
 
-  // Load existing goals from LocalStorage
-  let savedGoals = JSON.parse(localStorage.getItem('goals') || '[]');
+  <ul id="goals-list"></ul>
 
-  function renderGoals() {
-    list.innerHTML = ''; // clear old list
-    savedGoals.forEach((goalText, index) => {
-      const li = document.createElement('li');
-      li.textContent = goalText + ' ';
+  <script>
+    const form = document.getElementById('add-goal-form');
+    const input = document.getElementById('goal-input');
+    const list = document.getElementById('goals-list');
 
-      // create delete button
-      const btn = document.createElement('button');
-      btn.textContent = '❌';
-      btn.style.marginLeft = '8px';
+    // Load existing goals from LocalStorage
+    let savedGoals = JSON.parse(localStorage.getItem('goals') || '[]');
 
-      // delete goal on click
-      btn.addEventListener('click', () => {
-        savedGoals.splice(index, 1);               // remove from array
-        localStorage.setItem('goals', JSON.stringify(savedGoals)); // update storage
-        renderGoals();                              // redraw list
+    function renderGoals() {
+      list.innerHTML = '';
+      savedGoals.forEach((goalText, index) => {
+        const li = document.createElement('li');
+
+        const span = document.createElement('span');
+        span.textContent = goalText;
+        li.appendChild(span);
+
+        const del = document.createElement('button');
+        del.textContent = '❌';
+        del.addEventListener('click', () => {
+          savedGoals.splice(index, 1);
+          localStorage.setItem('goals', JSON.stringify(savedGoals));
+          renderGoals();
+        });
+
+        li.appendChild(del);
+        list.appendChild(li);
       });
+    }
 
-      li.appendChild(btn);
-      list.appendChild(li);
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      savedGoals.push(text);
+      localStorage.setItem('goals', JSON.stringify(savedGoals));
+      input.value = '';
+      renderGoals();
     });
-  }
 
-  // draw initial list
-  renderGoals();
-
-  // add new goal
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const text = input.value.trim();
-    if (!text) return;
-    savedGoals.push(text);
-    localStorage.setItem('goals', JSON.stringify(savedGoals));
-    input.value = '';
-    input.focus();
     renderGoals();
-  });
-</script>
-  
-  <body>
-  <h1>Welcome to My Goal Planner</h1>
+  </script>
 </body>
 </html>
