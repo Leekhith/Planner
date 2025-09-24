@@ -10,13 +10,38 @@
 <button onclick="saveGoal()">Save Goal</button>
 
 <script>
-function saveGoal() {
-  const goal = document.getElementById('mainGoal').value;
-  localStorage.setItem('mainGoal', goal);
-  alert("Your goal is saved!");
-}
+  const form = document.getElementById('add-goal-form');
+  const input = document.getElementById('goal-input');
+  const list = document.getElementById('goals-list');
+
+  // Load existing goals from LocalStorage when page loads
+  const savedGoals = JSON.parse(localStorage.getItem('goals') || '[]');
+  savedGoals.forEach(goalText => {
+    const li = document.createElement('li');
+    li.textContent = goalText;
+    list.appendChild(li);
+  });
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+
+    // Add to UI
+    const li = document.createElement('li');
+    li.textContent = text;
+    list.appendChild(li);
+
+    // Save to storage
+    savedGoals.push(text);
+    localStorage.setItem('goals', JSON.stringify(savedGoals));
+
+    input.value = '';
+    input.focus();
+  });
 </script>
-<body>
+
+  <body>
   <h1>Welcome to My Goal Planner</h1>
 </body>
 </html>
