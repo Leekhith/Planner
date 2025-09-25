@@ -92,3 +92,12 @@ li form {
   margin-top: 6px;
 }
 
+/* Sub-goals styling */
+li ul li {
+  background: #2c2c2c;
+  margin-bottom: 4px;
+  padding: 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
