@@ -156,3 +156,27 @@ async function generateRoadmap(goalText) {
   }
 }
 
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Add the main goal first
+  const newGoal = { text, completed: false, subGoals: [] };
+  savedGoals.push(newGoal);
+  input.value = '';
+  renderGoals();
+
+  // Generate roadmap using AI
+  const roadmapText = await generateRoadmap(text);
+
+  // Convert roadmap text into sub-goals (split by new lines)
+  const subGoals = roadmapText.split('\n').filter(line => line.trim() !== '');
+  subGoals.forEach(sub => newGoal.subGoals.push({ text: sub, completed: false }));
+
+  // Save and re-render
+  localStorage.setItem('goals', JSON.stringify(savedGoals));
+  renderGoals();
+});
+
+
