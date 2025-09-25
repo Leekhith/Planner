@@ -1,27 +1,36 @@
-<script>
 const form = document.getElementById('add-goal-form');
 const input = document.getElementById('goal-input');
 const list = document.getElementById('goals-list');
 
-// Load saved goals, each goal is now an object { text, completed }
+// Each goal now contains subGoals: [{text, completed}]
 let savedGoals = JSON.parse(localStorage.getItem('goals') || '[]');
 
 function renderGoals() {
   list.innerHTML = '';
-  savedGoals.forEach((goal, index) => {
+  savedGoals.forEach((goal, gIndex) => {
     const li = document.createElement('li');
+    li.style.flexDirection = 'column';
 
-    // Checkbox to mark complete
+    // --- Main Goal Row ---
+    const topRow = document.createElement('div');
+    topRow.style.display = 'flex';
+    topRow.style.justifyContent = 'space-between';
+    topRow.style.alignItems = 'center';
+    topRow.style.width = '100%';
+
+    const leftPart = document.createElement('div');
+    leftPart.style.display = 'flex';
+    leftPart.style.alignItems = 'center';
+
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = goal.completed;
     checkbox.addEventListener('change', () => {
       goal.completed = checkbox.checked;
       localStorage.setItem('goals', JSON.stringify(savedGoals));
-      renderGoals(); // redraw list
+      renderGoals();
     });
 
-    // Goal text
     const span = document.createElement('span');
     span.textContent = goal.text;
     if (goal.completed) {
@@ -29,32 +38,100 @@ function renderGoals() {
       span.style.color = '#888';
     }
 
-    // Delete button
+    leftPart.appendChild(checkbox);
+    leftPart.appendChild(span);
+
     const delBtn = document.createElement('button');
     delBtn.textContent = '❌';
     delBtn.addEventListener('click', () => {
-      savedGoals.splice(index, 1);
+      savedGoals.splice(gIndex, 1);
       localStorage.setItem('goals', JSON.stringify(savedGoals));
       renderGoals();
     });
 
-    li.appendChild(checkbox);
-    li.appendChild(span);
-    li.appendChild(delBtn);
+    topRow.appendChild(leftPart);
+    topRow.appendChild(delBtn);
+    li.appendChild(topRow);
+
+    // --- Sub-Goals List ---
+    goal.subGoals = goal.subGoals || [];
+    const subList = document.createElement('ul');
+    subList.style.marginTop = '6px';
+
+    goal.subGoals.forEach((sub, sIndex) => {
+      const subLi = document.createElement('li');
+
+      const subCheckbox = document.createElement('input');
+      subCheckbox.type = 'checkbox';
+      subCheckbox.checked = sub.completed;
+      subCheckbox.addEventListener('change', () => {
+        sub.completed = subCheckbox.checked;
+        localStorage.setItem('goals', JSON.stringify(savedGoals));
+        renderGoals();
+      });
+
+      const subSpan = document.createElement('span');
+      subSpan.textContent = sub.text;
+      if (sub.completed) {
+        subSpan.style.textDecoration = 'line-through';
+        subSpan.style.color = '#888';
+      }
+
+      const subDel = document.createElement('button');
+      subDel.textContent = '❌';
+      subDel.addEventListener('click', () => {
+        goal.subGoals.splice(sIndex, 1);
+        localStorage.setItem('goals', JSON.stringify(savedGoals));
+        renderGoals();
+      });
+
+      subLi.appendChild(subCheckbox);
+      subLi.appendChild(subSpan);
+      subLi.appendChild(subDel);
+      subList.appendChild(subLi);
+    });
+
+    li.appendChild(subList);
+
+    // --- Form to Add a Sub-Goal ---
+    const subForm = document.createElement('form');
+    subForm.style.display = 'flex';
+    subForm.style.gap = '6px';
+
+    const subInput = document.createElement('input');
+    subInput.type = 'text';
+    subInput.placeholder = 'Add sub-goal…';
+
+    const subBtn = document.createElement('button');
+    subBtn.textContent = '+';
+
+    subForm.appendChild(subInput);
+    subForm.appendChild(subBtn);
+
+    subForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const text = subInput.value.trim();
+      if (!text) return;
+      goal.subGoals.push({ text, completed: false });
+      localStorage.setItem('goals', JSON.stringify(savedGoals));
+      subInput.value = '';
+      renderGoals();
+    });
+
+    li.appendChild(subForm);
     list.appendChild(li);
   });
 }
 
-// Add new goal (as an object)
+// Add new main goal
 form.addEventListener('submit', e => {
   e.preventDefault();
   const text = input.value.trim();
   if (!text) return;
-  savedGoals.push({ text: text, completed: false }); // note object
+  savedGoals.push({ text: text, completed: false, subGoals: [] });
   localStorage.setItem('goals', JSON.stringify(savedGoals));
   input.value = '';
   renderGoals();
 });
 
 renderGoals();
-</script>
