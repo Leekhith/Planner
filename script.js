@@ -135,3 +135,24 @@ form.addEventListener('submit', e => {
 });
 
 renderGoals();
+
+async function generateRoadmap(goalText) {
+  try {
+    const response = await fetch('/api/roadmap', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ goal: goalText })
+    });
+
+    const data = await response.json();
+    if (data.roadmap) {
+      return data.roadmap; // AI returns a roadmap text
+    } else {
+      return "No roadmap generated.";
+    }
+  } catch (error) {
+    console.error(error);
+    return "Error generating roadmap.";
+  }
+}
+
