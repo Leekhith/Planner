@@ -84,3 +84,11 @@ li button:hover {
 li input[type="checkbox"] {
   margin-right: 8px;
 }
+li ul {
+  margin-left: 20px;
+  margin-top: 6px;
+}
+li form {
+  margin-top: 6px;
+}
+
