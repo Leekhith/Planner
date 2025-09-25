@@ -19,8 +19,14 @@ module.exports = async (req, res) => {
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: "You are a helpful planner that creates detailed roadmaps with subgoals and tasks." },
-        { role: "user", content: `Create a step-by-step roadmap for: ${goal}` }
+        {
+          role: "system",
+          content: "You are a helpful planner that creates detailed roadmaps with subgoals and tasks."
+        },
+        {
+          role: "user",
+          content: `Create a step-by-step roadmap for: ${goal}`
+        }
       ]
     });
 
