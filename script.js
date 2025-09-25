@@ -171,12 +171,32 @@ form.addEventListener('submit', async e => {
   const roadmapText = await generateRoadmap(text);
 
   // Convert roadmap text into sub-goals (split by new lines)
-  const subGoals = roadmapText.split('\n').filter(line => line.trim() !== '');
-  subGoals.forEach(sub => newGoal.subGoals.push({ text: sub, completed: false }));
+  // Try to split by numbered steps (1., 2., 3.) or bullets
+const subGoals = roadmapText
+  .split(/\n|•|-/)                // split by new line, bullets, or dashes
+  .map(line => line.trim())        // remove extra spaces
+  .filter(line => line.length > 0) // remove empty lines
+
+subGoals.forEach(sub => newGoal.subGoals.push({ text: sub, completed: false }));
 
   // Save and re-render
   localStorage.setItem('goals', JSON.stringify(savedGoals));
   renderGoals();
 });
 
+const toggleBtn = document.createElement('button');
+toggleBtn.textContent = '▼'; // collapse/expand symbol
+toggleBtn.style.marginRight = '6px';
+
+toggleBtn.addEventListener('click', () => {
+  if (subList.style.display === 'none') {
+    subList.style.display = 'block';
+    toggleBtn.textContent = '▼';
+  } else {
+    subList.style.display = 'none';
+    toggleBtn.textContent = '►';
+  }
+});
+
+leftPart.insertBefore(toggleBtn, checkbox); // place button before checkbox
 
